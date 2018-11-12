@@ -1,0 +1,9 @@
+scikit-learn
+cython
+wheel
+scikit-image
+protobuf
+rosdep
+rosinstall_generator
+wstool
+rosinstall

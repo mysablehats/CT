@@ -1,0 +1,22 @@
+#install a camera, say freenect
+
+sudo apt-get install ros-melodic-rgbd-launch
+
+mkdir -p ~/catkin_ws/src
+
+cd ~/catkin_ws/src
+
+git clone https://github.com/ros-drivers/freenect_stack.git
+
+cd ..
+catkin_make
+
+# this should work fine. maybe you need to also install the libfreenect packages from ubuntu, idk, i had them installed already
+
+#source it
+
+source ~/catkin_ws/devel/setup.bash
+
+#launch the camera
+
+roslaunch freenect_launch freenect.launch
