@@ -70,21 +70,25 @@ RUN git submodule init && git submodule update lib/caffe-action
 ADD Makefile.config /temporal-segment-networks/lib/caffe-action/
 RUN ./caffe2.sh
 ###this should be in caffe2.sh, but I don't want to recompile the whole thing, so to use the cached version im putting it here
-#WORKDIR lib/caffe-action
-#RUN make pycaffe
-#WORKDIR /temporal-segment-networks
+WORKDIR lib/caffe-action
+RUN make pycaffe
+WORKDIR /temporal-segment-networks
 
 ###This is all out of order, argh,
-#ENV PYTHONPATH=/temporal-segment-networks/caffe-action/python/caffe:$PYTHONPATH
+ENV PYTHONPATH=/temporal-segment-networks/caffe-action/python/caffe:$PYTHONPATH
 
 ## get trained models...
-#RUN bash scripts/get_reference_models.sh
+RUN bash scripts/get_reference_models.sh
 
 #### ROS stuff
 
-#ADD scripts/ros.sh /temporal-segment-networks/
-#RUN ./ros.sh
-#RUN echo "source /root/ros_catkin_ws/install_isolated/setup.bash" >> /etc/bash.bashrc
+ADD scripts/ros.sh /temporal-segment-networks/
+RUN ./ros.sh
+RUN echo "source /root/ros_catkin_ws/install_isolated/setup.bash" >> /etc/bash.bashrc
+
+ADD scripts/entrypoint.sh /temporal-segment-networks/
+ENV ROS_MASTER_URI=http://SATELLITE-S50-B:11311
+ENTRYPOINT ["/temporal-segment-networks/entrypoint.sh"]
 
 #ADD scripts/catkin_ws.sh /temporal-segment-networks/
 #RUN ./catkin_ws.sh
@@ -99,9 +103,6 @@ RUN ./caffe2.sh
 #EXPOSE 8888
 #RUN pip install jupyter
 #RUN chmod +x scripts/*.sh
-
-#ADD scripts/entrypoint.sh /temporal-segment-networks/
-#ENTRYPOINT ["/temporal-segment-networks/entrypoint.sh"]
 
 #CMD ["jupyter","notebook","--port=8888","--no-browser","--ip=172.17.0.2","--allow-root" ]
 ##jupyter notebook --port=8888 --no-browser --ip=172.17.0.2 --allow-root
