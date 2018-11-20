@@ -75,7 +75,7 @@ RUN make pycaffe
 WORKDIR /temporal-segment-networks
 
 ###This is all out of order, argh,
-ENV PYTHONPATH=/temporal-segment-networks/caffe-action/python/caffe:$PYTHONPATH
+ENV PYTHONPATH=/temporal-segment-networks/caffe-action/python/caffe:/temporal-segment-networks/:$PYTHONPATH
 
 ## get trained models...
 RUN bash scripts/get_reference_models.sh
@@ -90,8 +90,10 @@ ADD scripts/entrypoint.sh /temporal-segment-networks/
 ENV ROS_MASTER_URI=http://SATELLITE-S50-B:11311
 ENTRYPOINT ["/temporal-segment-networks/entrypoint.sh"]
 
-#ADD scripts/catkin_ws.sh /temporal-segment-networks/
-#RUN ./catkin_ws.sh
+ADD foo/* /temporal-segment-networks/my_of/ua/
+
+ADD scripts/catkin_ws.sh /temporal-segment-networks/
+RUN ./catkin_ws.sh
 #RUN mkdir -p /temporal-segment-networks/ros_video/ua
 
 #RUN echo "export ROS_MASTER_URI=\"http://scitos:11311\"" >> /temporal-segment-networks/catkin_ws/devel/setup.bash
@@ -99,10 +101,10 @@ ENTRYPOINT ["/temporal-segment-networks/entrypoint.sh"]
 
 ################
 ### try to run jupyter so we can do some coding...
-#WORKDIR /temporal-segment-networks
-#EXPOSE 8888
-#RUN pip install jupyter
-#RUN chmod +x scripts/*.sh
-
-#CMD ["jupyter","notebook","--port=8888","--no-browser","--ip=172.17.0.2","--allow-root" ]
-##jupyter notebook --port=8888 --no-browser --ip=172.17.0.2 --allow-root
+WORKDIR /temporal-segment-networks
+EXPOSE 8888
+RUN pip install jupyter
+RUN chmod +x scripts/*.sh
+ADD ec.ipynb /temporal-segment-networks/
+CMD ["jupyter","notebook","--port=8888","--no-browser","--ip=172.28.5.3","--allow-root" ]
+##jupyter notebook --port=8888 --no-browser --ip=172.28.5.3 --allow-root

@@ -2,7 +2,8 @@
 source /root/ros_catkin_ws/install_isolated/setup.bash
 mkdir -p /temporal-segment-networks/catkin_ws/src
 cd /temporal-segment-networks/catkin_ws/src
-git clone https://github.com/frederico-klein/create_video.git
+git clone https://github.com/mysablehats/caffe_tsn_ros.git
+#git clone https://github.com/frederico-klein/create_video.git
 #git clone https://github.com/ros-perception/vision_opencv.git
 #latest version is too new. it requires opencv3 and since i don't want to install
 #2 versions or change the tsn code to use opencv3 we will use an older version of
