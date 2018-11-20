@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 echo "STARTING ROS CAFFE TSN DOCKER..."
-cat banner.txt
+
 MACHINENAME=tsn_caffe
 ISTHERENET=`docker network ls | grep br0`
 if [ -z "$ISTHERENET" ]
@@ -17,5 +17,7 @@ else
       echo "found br0 docker network."
 fi
 
+scripts/enable_forwarding_docker_host.sh
 #nvidia-docker run --rm -it -p 8888:8888 -h $MACHINENAME --network=br0 --ip=172.28.5.3 ct #bash
+cat banner.txt
 nvidia-docker run --rm -it -p 8888:8888 -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix -h $MACHINENAME --network=br0 --ip=172.28.5.3 ct bash # -c "jupyter notebook --port=8888 --no-browser --ip=172.28.5.3 --allow-root &" && bash -i
