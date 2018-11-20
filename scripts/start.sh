@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
-source /catkin_ws/devel/setup.bash
-roslaunch dense_flow df.launch & rostopic hz /df_extract_gpu/image
+source /temporal-segment-networks/catkin_ws/devel/setup.bash
+roslaunch caffe_tsn_ros cf.launch & rostopic hz /image_raw
