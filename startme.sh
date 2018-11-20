@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+nvidia-docker build -t ct .
 echo "STARTING ROS CAFFE TSN DOCKER..."
 
 MACHINENAME=tsn_caffe

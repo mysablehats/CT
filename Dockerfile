@@ -90,10 +90,12 @@ ADD scripts/entrypoint.sh /temporal-segment-networks/
 ENV ROS_MASTER_URI=http://SATELLITE-S50-B:11311
 ENTRYPOINT ["/temporal-segment-networks/entrypoint.sh"]
 
+### only needed for testing. should be removed at some point.
 ADD foo/* /temporal-segment-networks/my_of/ua/
 
 ADD scripts/catkin_ws.sh /temporal-segment-networks/
 RUN ./catkin_ws.sh
+ADD scripts/start.sh /tmp
 #RUN mkdir -p /temporal-segment-networks/ros_video/ua
 
 #RUN echo "export ROS_MASTER_URI=\"http://scitos:11311\"" >> /temporal-segment-networks/catkin_ws/devel/setup.bash
@@ -101,10 +103,10 @@ RUN ./catkin_ws.sh
 
 ################
 ### try to run jupyter so we can do some coding...
-WORKDIR /temporal-segment-networks
-EXPOSE 8888
-RUN pip install jupyter
-RUN chmod +x scripts/*.sh
-ADD ec.ipynb /temporal-segment-networks/
-CMD ["jupyter","notebook","--port=8888","--no-browser","--ip=172.28.5.3","--allow-root" ]
+#WORKDIR /temporal-segment-networks
+#EXPOSE 8888
+#RUN pip install jupyter
+#RUN chmod +x scripts/*.sh
+#ADD ec.ipynb /temporal-segment-networks/
+#CMD ["jupyter","notebook","--port=8888","--no-browser","--ip=172.28.5.3","--allow-root" ]
 ##jupyter notebook --port=8888 --no-browser --ip=172.28.5.3 --allow-root
