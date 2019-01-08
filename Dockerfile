@@ -44,6 +44,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         python-pip\
         python-scipy\
         python-setuptools\
+        openssh-server\
         unzip\
         v4l-utils\
         wget\
@@ -86,20 +87,28 @@ ADD scripts/ros.sh /temporal-segment-networks/
 RUN ./ros.sh
 RUN echo "source /root/ros_catkin_ws/install_isolated/setup.bash" >> /etc/bash.bashrc
 
-ADD scripts/entrypoint.sh /temporal-segment-networks/
-ENV ROS_MASTER_URI=http://SATELLITE-S50-B:11311
-ENTRYPOINT ["/temporal-segment-networks/entrypoint.sh"]
 
-### only needed for testing. should be removed at some point.
-ADD foo/* /temporal-segment-networks/my_of/ua/
+ENV ROS_MASTER_URI=http://SATELLITE-S50-B:11311
 
 ADD scripts/catkin_ws.sh /temporal-segment-networks/
 RUN ./catkin_ws.sh
 ADD scripts/start.sh /tmp
-#RUN mkdir -p /temporal-segment-networks/ros_video/ua
 
 #RUN echo "export ROS_MASTER_URI=\"http://scitos:11311\"" >> /temporal-segment-networks/catkin_ws/devel/setup.bash
 
+# to get ssh working for the ros machine to be functional: (adapted from docker docs running_ssh_service)
+RUN mkdir /var/run/sshd
+RUN echo 'root:ros_ros' | chpasswd
+RUN sed -i 's/PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
+RUN sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd
+
+ENV NOTVISIBLE "in users profile"
+RUN echo "export VISIBLE=now" >> /etc/profile
+
+EXPOSE 22
+
+ADD scripts/entrypoint.sh /temporal-segment-networks/
+ENTRYPOINT ["/temporal-segment-networks/entrypoint.sh"]
 
 ################
 ### try to run jupyter so we can do some coding...

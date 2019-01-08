@@ -21,4 +21,4 @@ fi
 scripts/enable_forwarding_docker_host.sh
 #nvidia-docker run --rm -it -p 8888:8888 -h $MACHINENAME --network=br0 --ip=172.28.5.3 ct #bash
 cat banner.txt
-nvidia-docker run --rm -it -p 8888:8888 -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix -h $MACHINENAME --network=br0 --ip=172.28.5.3 ct bash # -c "jupyter notebook --port=8888 --no-browser --ip=172.28.5.3 --allow-root &" && bash -i
+nvidia-docker run --rm -it -u root -p 8888:8888 -p 22:22 -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix -h $MACHINENAME --network=br0 --ip=172.28.5.3 ct bash # -c "jupyter notebook --port=8888 --no-browser --ip=172.28.5.3 --allow-root &" && bash -i
