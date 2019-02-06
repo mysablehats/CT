@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+#changed a line to make docker remake catkin. I should think of a more elegant way of doing this...
 source /root/ros_catkin_ws/install_isolated/setup.bash
 mkdir -p /temporal-segment-networks/catkin_ws/src
 cd /temporal-segment-networks/catkin_ws/src
