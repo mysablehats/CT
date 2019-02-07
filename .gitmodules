@@ -1,0 +1,3 @@
+[submodule "catkin_ws/src/caffe_tsn_ros"]
+	path = catkin_ws/src/caffe_tsn_ros
+	url = git@github.com:mysablehats/caffe_tsn_ros.git
