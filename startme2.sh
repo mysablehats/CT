@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+
+####NOT UPTODATE!
+#TODO: NV_GPU makes me have 2 files, this is bad.  
 NV_GPU=1 nvidia-docker build -t ct .
 echo "STARTING ROS CAFFE TSN DOCKER..."
 

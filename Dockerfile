@@ -54,8 +54,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 ### now python STUFF
 ENV PYTHONPATH=/usr/local/lib/python2.7/site-packages:$PYTHONPATH
-RUN pip install --upgrade pip
 ADD requirements.txt ./
+RUN pip install --upgrade pip
 RUN pip install --trusted-host pypi.python.org -r requirements.txt
 
 # now install TSN
@@ -81,31 +81,35 @@ ENV PYTHONPATH=/temporal-segment-networks/caffe-action/python/caffe:/temporal-se
 ## get trained models...
 RUN bash scripts/get_reference_models.sh
 
+# to get ssh working for the ros machine to be functional: (adapted from docker docs running_ssh_service)
+RUN mkdir /var/run/sshd \
+    && echo 'root:ros_ros' | chpasswd \
+    && sed -i 's/PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config \
+    && sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd
+
+ENV NOTVISIBLE "in users profile" \
+    && echo "export VISIBLE=now" >> /etc/profile
+
+EXPOSE 22
+
+#add my snazzy banner
+ADD banner.txt /temporal-segment-networks/
+
 #### ROS stuff
 
 ADD scripts/ros.sh /temporal-segment-networks/
-RUN ./ros.sh
-RUN echo "source /root/ros_catkin_ws/install_isolated/setup.bash" >> /etc/bash.bashrc
-
+RUN ./ros.sh \
+    && echo "source /root/ros_catkin_ws/install_isolated/setup.bash" >> /etc/bash.bashrc
 
 ENV ROS_MASTER_URI=http://SATELLITE-S50-B:11311
 
-ADD scripts/catkin_ws.sh /temporal-segment-networks/
-RUN ./catkin_ws.sh
-ADD scripts/start.sh /tmp
-
 #RUN echo "export ROS_MASTER_URI=\"http://scitos:11311\"" >> /temporal-segment-networks/catkin_ws/devel/setup.bash
 
-# to get ssh working for the ros machine to be functional: (adapted from docker docs running_ssh_service)
-RUN mkdir /var/run/sshd
-RUN echo 'root:ros_ros' | chpasswd
-RUN sed -i 's/PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
-RUN sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd
+ADD scripts/catkin_ws.sh /temporal-segment-networks/
+#RUN ./catkin_ws.sh
+ADD scripts/start.sh /tmp
 
-ENV NOTVISIBLE "in users profile"
-RUN echo "export VISIBLE=now" >> /etc/profile
-
-EXPOSE 22
+#ADD catkin_ws/* /temporal-segment-networks/catkin_ws/src
 
 ADD scripts/entrypoint.sh /temporal-segment-networks/
 ENTRYPOINT ["/temporal-segment-networks/entrypoint.sh"]
