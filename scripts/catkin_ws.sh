@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
-$DIRECTORY=/temporal-segment-networks/catkin_ws/src/vision_opencv-1.11.16
+#VAR=`ls /temporal-segment-networks/catkin_ws/src/ | grep vision_opencv`
+DIRECTORY=/temporal-segment-networks/catkin_ws/src/vision_opencv-1.11.16
 #if vision_opencv is not there, create it
-if [ -d "$DIRECTORY" ]; then
+if [ ! -d "$DIRECTORY" ]; then
+#if [ -z "$VAR" ]; then
   source /root/ros_catkin_ws/install_isolated/setup.bash
   mkdir -p /temporal-segment-networks/catkin_ws/src
   cd /temporal-segment-networks/catkin_ws/src
