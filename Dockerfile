@@ -112,6 +112,10 @@ ADD scripts/start.sh /tmp
 #ADD catkin_ws/* /temporal-segment-networks/catkin_ws/src
 
 ADD scripts/entrypoint.sh /temporal-segment-networks/
+RUN apt install tmux nano -y --no-install-recommends \
+  && rm -rf /var/lib/apt/lists/*
+
+#remove this or put it together with the upper guys
 ENTRYPOINT ["/temporal-segment-networks/entrypoint.sh"]
 
 ################
