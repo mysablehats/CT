@@ -1,15 +1,30 @@
 #!/usr/bin/env bash
 PASSWD=$1
+MYUSERNAME=frederico
+DOCKERHOSTNAME=poop
+THISVOLUMENAME=sshvolume
+DOCKERMACHINEIP=172.28.5.3
+DOCKERMACHINENAME=ct
+MACHINEHOSTNAME=tsn_caffe
+CATKINWSPATH=/temporal-segment-networks/catkin_ws
+#export NV_GPU=1
 if [ -z "$PASSWD" ]
 then
   echo "you need to input your own password to mount the internal ssh volume that is shared between docker and the docker host!"
   echo "usage is: $0 <your-password-here>"
 else
-  nvidia-docker build -t ct .
-  #nvidia-docker build --no-cache -t ct .
-  echo "STARTING ROS CAFFE TSN DOCKER..."
+  while true; do
+    {
+    #echo "doing nothing"
+    nvidia-docker build -t $DOCKERMACHINENAME .
+    #nvidia-docker build --no-cache -t $DOCKERMACHINENAME .
+    } ||
+    {
+    echo "something went wrong..." &&
+    break
+    }
+  echo "STARTING ROS TSN CAFFE DOCKER..."
 
-  MACHINENAME=tsn_caffe
   ISTHERENET=`docker network ls | grep br0`
   if [ -z "$ISTHERENET" ]
   then
@@ -25,11 +40,23 @@ else
   fi
 
   scripts/enable_forwarding_docker_host.sh
-  #nvidia-docker run --rm -it -p 8888:8888 -h $MACHINENAME --network=br0 --ip=172.28.5.3 ct #bash
-  docker volume create --driver vieux/sshfs   -o sshcmd=frederico@poop:$PWD/catkin_ws -o password=$PASSWD sshvolume
-  nvidia-docker run --rm -it -u root -p 8888:8888 -p 222:22 -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix -v sshvolume:/temporal-segment-networks/catkin_ws -h $MACHINENAME --network=br0 --ip=172.28.5.3 ct bash # -c "jupyter notebook --port=8888 --no-browser --ip=172.28.5.3 --allow-root &" && bash -i
+  #nvidia-docker run --rm -it -p 8888:8888 -h $MACHINEHOSTNAME --network=br0 --ip=$DOCKERMACHINEIP $DOCKERMACHINENAME #bash
+  {
+  docker volume create --driver vieux/sshfs   -o sshcmd=$MYUSERNAME@$DOCKERHOSTNAME:$PWD/catkin_ws -o password=$PASSWD $THISVOLUMENAME
+  } ||
+  {
+    echo "could not mount ssh volume. perhaps vieux is not installed?" &&
+    echo "install with: docker plugin install vieux/sshfs" &&
+    break
+  }
+#  nvidia-docker run --rm -it -u root -p 8888:8888 -p 222:22 -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix -v $THISVOLUMENAME:/catkin_ws -h $MACHINEHOSTNAME --network=br0 --ip=$DOCKERMACHINEIP $DOCKERMACHINENAME bash # -c "jupyter notebook --port=8888 --no-browser --ip=$DOCKERMACHINEIP --allow-root &" && bash -i
+  nvidia-docker run --rm -it -u root -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix -v $THISVOLUMENAME:$CATKINWSPATH -h $MACHINEHOSTNAME --network=br0 --ip=$DOCKERMACHINEIP $DOCKERMACHINENAME bash # -c "jupyter notebook --port=8888 --no-browser --ip=172.28.5.4 --allow-root &" && bash -i
+
+
   ## if I add this with -v I can't catkin_make it with entrypoint...
   #-v /temporal-segment-networks/catkin_ws:$PWD/catkin_ws/src
   #
-  docker volume rm sshvolume
+  docker volume rm $THISVOLUMENAME
+  break
+  done
 fi
